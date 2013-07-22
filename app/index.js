@@ -10,6 +10,8 @@ function Generator(args, options, config) {
 
   this.testFramework = this.options['test-framework'] || 'mocha';
   this.templateFramework = this.options['template-framework'] || 'lodash';
+  this.useNotification = this.options['use-notification'];
+  this.useCoffeescript = this.options['coffee'];
   this.hookFor(this.testFramework, {
     as: 'app',
     options: {
@@ -137,6 +139,8 @@ Generator.prototype.writeIndex = function writeIndex() {
 
   if (this.templateFramework === 'handlebars') {
     vendorJS.push('bower_components/handlebars/handlebars.js')
+  }else if( this.templateFramework === 'hogan' ) {
+	vendorJS.push('bower_components/hogan/web/builds/2.0.0/hogan-2.0.0.js')
   }
 
   this.indexFile = this.appendScripts(this.indexFile, 'scripts/vendor.js', vendorJS);
@@ -250,12 +254,13 @@ Generator.prototype.mainJs = function mainJs() {
     return;
   }
 
-  var dirPath = this.options.coffee ? '../templates/coffeescript/' : '../templates';
+  var ext = this.options.coffee ? ".coffee" : ".js";
+  var dirPath = this.options.coffee ? '../templates/coffeescript' : '../templates';
   this.sourceRoot(path.join(__dirname, dirPath));
 
-  var mainJsFile = this.engine(this.read('requirejs_app.js'), this);
+  var mainJsFile = this.engine(this.read('requirejs_app' + ext), this);
 
-  this.write('app/scripts/main.js', mainJsFile);
+  this.write('app/scripts/main' + ext, mainJsFile);
 };
 
 Generator.prototype.createAppFile = function createAppFile() {

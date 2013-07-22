@@ -19,30 +19,27 @@ util.inherits(Generator, scriptBase);
 Generator.prototype.createControllerFiles = function createControllerFiles() {
   var ext = this.options.coffee ? 'coffee' : 'js';
   var destFile = path.join('app/scripts/collections', this.name + '-collection.' + ext);
-  var isRequireJsApp = this.isUsingRequireJS();
+  this.isRequireJsApp = this.isUsingRequireJS();
 
-  if (!isRequireJsApp) {
-    this.template('collection.' + ext, destFile);
-    return;
-  }
+  this.template('collection.' + ext, destFile);
 
-  var template = [
-    '/*global define*/',
-    '',
-    'define([',
-    '    \'underscore\',',
-    '    \'backbone\',',
-    '    \'models/' + this.name + '-model\'',
-    '], function (_, Backbone, ' + this._.classify(this.name) + 'Model' + ') {',
-    '    \'use strict\';',
-    '',
-    '    var ' + this._.classify(this.name) + 'Collection = Backbone.Collection.extend({',
-    '        ' + 'model: ' + this._.classify(this.name) + 'Model',
-    '    });',
-    '',
-    '    return ' + this._.classify(this.name) + 'Collection;',
-    '});',
-  ].join('\n');
-
-  this.write(destFile, template);
+//  var template = [
+//    '/*global define*/',
+//    '',
+//    'define([',
+//    '    \'underscore\',',
+//    '    \'backbone\',',
+//    '    \'models/' + this.name + '-model\'',
+//    '], function (_, Backbone, ' + this._.classify(this.name) + 'Model' + ') {',
+//    '    \'use strict\';',
+//    '',
+//    '    var ' + this._.classify(this.name) + 'Collection = Backbone.Collection.extend({',
+//    '        ' + 'model: ' + this._.classify(this.name) + 'Model',
+//    '    });',
+//    '',
+//    '    return ' + this._.classify(this.name) + 'Collection;',
+//    '});',
+//  ].join('\n');
+//
+//  this.write(destFile, template);
 };

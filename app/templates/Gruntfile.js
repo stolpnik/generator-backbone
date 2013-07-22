@@ -29,6 +29,10 @@ module.exports = function (grunt) {
                 nospawn: true,
                 livereload: true
             },
+	        coffee: {
+	            files: ['<%%= yeoman.app %>/scripts/{,*/}*.coffee'],
+		        tasks: ['coffee:dist']
+	        },
             coffeeTest: {
                 files: ['test/spec/{,*/}*.coffee'],
                 tasks: ['coffee:test']
@@ -59,6 +63,12 @@ module.exports = function (grunt) {
                     '<%%= yeoman.app %>/scripts/templates/*.hbs'
                 ],
                 tasks: ['handlebars']
+			}<% } else if (templateFramework === 'hogan') { %>,
+			hogan: {
+				files: [
+					'<%%= yeoman.app %>/scripts/templates/*.mustache'
+				],
+				tasks: ['hogan']
             }<% } else { %>,
             jst: {
                 files: [
@@ -293,7 +303,19 @@ module.exports = function (grunt) {
                     '.tmp/scripts/templates.js': ['<%%= yeoman.app %>/scripts/templates/*.hbs']
                 }
             }
-        }<% } else { %>
+        }<% }else if ( templateFramework === 'hogan' ){ %>
+        hogan: {
+		    publish: {
+			    templates: '<%%= yeoman.app %>/scripts/templates/{,*/}*.mustache',
+			    output: '.tmp/scripts/templates.js',
+			    binderName: '<%= includeRequireJS ? "amd" : "revealing" %>',
+			    exportName: 'Templates',
+			    nameFunc: function(filename){
+				    //filename.split('/').pop().split(".").shift();
+					return filename;
+			    }
+		    }
+	    }<% } else { %>
         jst: {<% if (includeRequireJS) { %>
             options: {
                 amd: true
@@ -318,16 +340,41 @@ module.exports = function (grunt) {
         }<% if (!includeRequireJS) { %>,
         neuter: {
             app: {
-                src: '<%%= yeoman.app %>/scripts/main.js',
+                src: '<% if( useCoffeescript ){ %>.tmp<% }else{ %><%%= yeoman.app %><% } %>/scripts/main.js',
                 dest: '.tmp/scripts/combined-scripts.js'
             }
-        }<% } %>
+        }<% } %><% if ( useNotification ){ %>,
+		notify: {
+			coffee: {
+				options: {
+					message: "Coffee compiled"
+				}
+			},
+			compass: {
+				options: {
+					message: "Compass compiled"
+				}
+			}
+		}<% } %>
     });
 
     grunt.registerTask('createDefaultTemplate', function () {
-        grunt.file.write('.tmp/scripts/templates.js', 'this.JST = this.JST || {};');
+        grunt.file.write('.tmp/scripts/templates.js', 'window.<%= appname %>.Templates = window.<%= appname %>.Templates || {};');
     });
-
+	<% if( templateFramework === 'hogan' ){ %>
+	grunt.registerTask('createHoganTemplate', 'compile hogan.js template and add some...',
+		function(){
+			var text, targetFile = '.tmp/scripts/templates.js';
+			text = grunt.file.read( targetFile );
+			text += '\n';
+			text += 'window.<%= appname %> = window.<%= appname %> || {};\n';
+			text += 'window.<%= appname %>.Templates = Templates || templates;';
+			grunt.file.write( targetFile, text);
+		}
+	);
+	grunt.registerTask( 'compileHogan',
+		[ 'hogan'<% if( !includeRequireJS ){ %>, 'createHoganTemplate'<% } %> ]
+	);<% } %>
     grunt.registerTask('server', function (target) {
         if (target === 'dist') {
             return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
@@ -338,7 +385,8 @@ module.exports = function (grunt) {
             'coffee:dist',
             'createDefaultTemplate',<% if (templateFramework === 'mustache') { %>
             'mustache',<% } else if (templateFramework === 'handlebars') { %>
-            'handlebars',<% } else { %>
+            'handlebars',<% } else if (templateFramework === 'hogan') { %>
+            'compileHogan',<% } else { %>
             'jst',<% } %><% if (!includeRequireJS) { %>
             'neuter:app',<% } %>
             'compass:server',
@@ -353,7 +401,8 @@ module.exports = function (grunt) {
         'coffee',
         'createDefaultTemplate',<% if (templateFramework === 'mustache' ) { %>
         'mustache',<% } else if (templateFramework === 'handlebars') { %>
-        'handlebars',<% } else { %>
+        'handlebars',<% } else if (templateFramework === 'hogan') { %>
+        'compileHogan',<% } else { %>
         'jst',<% } %><% if (!includeRequireJS) { %>
         'neuter:app',<% } %>
         'compass',
@@ -366,7 +415,8 @@ module.exports = function (grunt) {
         'coffee',
         'createDefaultTemplate',<% if (templateFramework === 'mustache' ) { %>
         'mustache',<% } else if (templateFramework === 'handlebars') { %>
-        'handlebars',<% } else { %>
+        'handlebars',<% } else if (templateFramework === 'hogan') { %>
+        'compileHogan',<% } else { %>
         'jst',<% } %>
         'compass:dist',
         'useminPrepare',<% if (includeRequireJS) { %>

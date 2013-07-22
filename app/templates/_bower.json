@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "dependencies": {<% if (compassBootstrap) { %>
     "sass-bootstrap": "~2.3.0",<% } %>
-    "jquery": "~1.9.0",<% if (!includeRequireJS) { %>
-    "underscore": "~1.4.3",
+    "jquery": "~1.10.0",<% if (!includeRequireJS) { %>
+    "underscore": "~1.5.1",
     "backbone": "~1.0.0",<% }else{ %>
     "requirejs": "~2.1.5",
     "requirejs-text": "~2.0.5",
     "backbone-amd": "~1.0.0",
-    "underscore-amd": "~1.4.4",<% } %>
+    "underscore-amd": "~1.5.1",<% } %>
     "modernizr": "~2.6.2"<% if (templateFramework === 'handlebars') { %>,
-    "handlebars": "~1.0.0"<% } %>
+    "handlebars": "~1.0.0"<% } else if (templateFramework === 'hogan') { %>,
+    "hogan": "*"<% } %>
   },
   "devDependencies": {}
 }

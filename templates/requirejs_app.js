@@ -19,14 +19,18 @@ require.config({
         }<% } %><% if (templateFramework === 'handlebars') { %>,
         handlebars: {
             exports: 'Handlebars'
-        }<% } %>
+        }<% } else if( templateFramework === 'hogan' ){ %>,
+		hogan: {
+			exports: 'hogan'
+		}<% } %>
     },
     paths: {
         jquery: '../bower_components/jquery/jquery',
         backbone: '../bower_components/backbone-amd/backbone',
         underscore: '../bower_components/underscore-amd/underscore'<% if (compassBootstrap) { %>,
         bootstrap: 'vendor/bootstrap'<% } %><% if (templateFramework === 'handlebars') { %>,
-        handlebars: '../bower_components/handlebars/handlebars'<% } %>
+        handlebars: '../bower_components/handlebars/handlebars'<% } else if( templateFramework === 'hogan' ){ %>,
+		hogan: '../bower_components/hogan/web/builds/2.0.0/hogan-2.0.0<%= includeRequireJS ? ".amd" : "" %>'<% } %>
     }
 });
 

@@ -6,6 +6,7 @@ window.<%= _.camelize(appname) %> = {
     Collections: {},
     Views: {},
     Routers: {},
+	Templates: {},
     init: function () {
         console.log('Hello from Backbone!');
     }

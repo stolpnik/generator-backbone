@@ -21,30 +21,27 @@ Generator.prototype.createControllerFiles = function createControllerFiles() {
   var destFile = path.join('app/scripts/routes', this.name + '-router.' + ext);
   this.isRequireJsApp = this.isUsingRequireJS();
 
-  if (!this.isRequireJsApp) {
-    this.template('router.' + ext, destFile);
-    return;
-  }
+  this.template('router.' + ext, destFile);
 
-  var template = [
-    '/*global define*/',
-    '',
-    'define([',
-    '    \'jquery\',',
-    '    \'backbone\'',
-    '], function ($, Backbone) {',
-    '    \'use strict\';',
-    '',
-    '    var ' + this._.classify(this.name) + 'Router = Backbone.Router.extend({',
-    '        routes: {',
-    '        }',
-    '',
-    '    });',
-    '',
-    '    return ' + this._.classify(this.name) + 'Router;',
-    '});'
-  ].join('\n');
-
-  this.write(destFile, template);
+//  var template = [
+//    '/*global define*/',
+//    '',
+//    'define([',
+//    '    \'jquery\',',
+//    '    \'backbone\'',
+//    '], function ($, Backbone) {',
+//    '    \'use strict\';',
+//    '',
+//    '    var ' + this._.classify(this.name) + 'Router = Backbone.Router.extend({',
+//    '        routes: {',
+//    '        }',
+//    '',
+//    '    });',
+//    '',
+//    '    return ' + this._.classify(this.name) + 'Router;',
+//    '});'
+//  ].join('\n');
+//
+//  this.write(destFile, template);
 
 };
